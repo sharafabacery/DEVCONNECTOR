@@ -1,9 +1,9 @@
 import React ,{Fragment,useState}from 'react'
-import {Link} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
+import{connect} from 'react-redux'
+import { login } from "../../actions/auth";
 
-
-
-function Login() {
+function Login({login,isAuthenticated}) {
     //this.sestate
     //setformdata to make a copy of changed data
     //onchange to get any change happen
@@ -11,12 +11,16 @@ function Login() {
         email:"",
         password:""
     })
-    const {name,email,password,password2}=formData
+    const {email,password}=formData
     const onChange=e=>setFormData({...formData,[e.target.name]:e.target.value})
     const onSubmit=async e=>{ 
-        e.preventDefault();
-        console.log(155)
+      e.preventDefault();
+      login(email,password)
 
+    }
+
+    if (isAuthenticated) {
+      return <Redirect to="/dashboard"/>
     }
     return (
         <Fragment>
@@ -51,4 +55,15 @@ function Login() {
     )
 }
 
-export default Login
+const mapDispatchToProps=(dispatch)=>(
+  {
+    login:(email,password)=>dispatch(login(email,password))
+   
+  }
+)
+
+const mapToStateToProps=state=>({
+  isAuthenticated:state.auth.isAuthenticated
+})
+
+export default connect(mapToStateToProps,mapDispatchToProps)(Login)

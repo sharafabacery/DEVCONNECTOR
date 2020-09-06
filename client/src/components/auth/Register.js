@@ -1,12 +1,12 @@
 import React ,{Fragment,useState}from 'react'
-import {Link} from 'react-router-dom'
+import {Link,Redirect} from 'react-router-dom'
 import {connect}from 'react-redux'
 import {setAlert} from "../../actions/alert"
 import {register} from "../../actions/auth"
 
 
 
-function Register({setAlert,register}) {
+function Register({setAlert,register,isAuthenticated}) {
     //this.sestate
     //setformdata to make a copy of changed data
     //onchange to get any change happen
@@ -23,8 +23,13 @@ function Register({setAlert,register}) {
         if(password !==password2)setAlert("password not match","danger")
         else {
           register({name,email,password})
+          
+       
         }
     }
+     if (isAuthenticated) {
+           return <Redirect to="/dashboard"/>
+        }
     return (
         <Fragment>
         <h1 className="large text-primary">Sign Up</h1>
@@ -68,11 +73,14 @@ function Register({setAlert,register}) {
         </Fragment>
     )
 }
-const mapToStateTOProps=(dispatch)=>(
+const mapDispatchToProps=(dispatch)=>(
   {
     setAlert:(msg,alertType)=>dispatch(setAlert(msg,alertType))
     ,register:({name,email,password})=>dispatch(register({name,email,password}))
   }
 )
+const mapToStateToProps=state=>({
+  isAuthenticated:state.auth.isAuthenticated
+})
 
-export default connect(null,mapToStateTOProps)(Register) 
+export default connect(mapToStateToProps,mapDispatchToProps)(Register) 
