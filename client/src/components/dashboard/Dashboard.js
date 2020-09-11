@@ -1,10 +1,12 @@
 import React,{useEffect,Fragment} from 'react'
-
 import { connect } from "react-redux";
-import { getCurrentProfile } from "../../actions/profile";
+import { getCurrentProfile,deleteAccount } from "../../actions/profile";
 import Spinner from '../layout/Spinner'
 import { Link } from 'react-router-dom';
-function Dashboard({getCurrentProfile,auth:{user},profile:{profile,loading}}) {
+import DashboardActions from './DashboardActions';
+import Experience from './Experience';
+import Education from './Education';
+function Dashboard({getCurrentProfile,deleteAccount,auth:{user},profile:{profile,loading}}) {
     useEffect(()=>{
         getCurrentProfile()
     },[])
@@ -17,7 +19,15 @@ function Dashboard({getCurrentProfile,auth:{user},profile:{profile,loading}}) {
     </i>
     </p>
     {
-        profile !==null ?<Fragment>has</Fragment>:<Fragment><p>You have not yet setup a profile, please add some info</p>
+        profile !==null ?<Fragment><DashboardActions/>
+        <Experience experience={profile.experience}/>
+        <Education education={profile.education}/>
+        <div className="my-2">
+        <button className="btn btn-danger" onClick={()=>deleteAccount()}><i className="fas fa-user-minus">
+        </i>Delete My Account
+        </button>
+        </div>
+        </Fragment>:<Fragment><p>You have not yet setup a profile, please add some info</p>
         <Link to='/create-profile' className='btn btn-primary my-1'>
         Create Profile
         </Link>
@@ -35,6 +45,7 @@ const mapDispatchToProps=(dispatch)=>(
     {
 
       getCurrentProfile:()=>dispatch(getCurrentProfile())
+      ,deleteAccount:()=>dispatch(deleteAccount())
      
     }
 )
