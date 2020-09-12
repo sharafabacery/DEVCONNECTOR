@@ -8,7 +8,9 @@ import {
     GET_PROFILE,
     PROFILE_ERROR,
     UPDATE_PROFILE,
-    ACCOUNT_DELETED
+    ACCOUNT_DELETED,
+    GET_PROFILES,
+    GET_REPOS
 } from "./types";
 
 //get current users profile
@@ -30,7 +32,61 @@ export const getCurrentProfile = () => async dispatch => {
     }
 }
 //create or update
+//get current users profile
+export const getProfiles = () => async dispatch => {
+    dispatch({type:CLEAR_PROFILE})
+    try {
+        const res = await axios.get('/api/profile')
+        dispatch({
+            type: GET_PROFILES,
+            payload: res.data
+        })
+    } catch (error) {
+     
 
+        dispatch({
+            type: PROFILE_ERROR,
+            payload: error.response.statusText,
+            status: error.response.status
+        })
+    }
+}
+export const getProfileById = (userID) => async dispatch => {
+    
+    try {
+        const res = await axios.get(`/api/profile/user/${userID}`)
+        dispatch({
+            type: GET_PROFILE,
+            payload: res.data
+        })
+    } catch (error) {
+     
+
+        dispatch({
+            type: PROFILE_ERROR,
+            payload: error.response.statusText,
+            status: error.response.status
+        })
+    }
+}
+//Githup repos
+export const getGithupRepos = (username) => async dispatch => {
+    try {
+        const res = await axios.get(`/api/profile/github/${username}`)
+        dispatch({
+            type: GET_REPOS,
+            payload: res.data
+        })
+    } catch (error) {
+     
+
+        dispatch({
+            type: PROFILE_ERROR,
+            payload: error.response.statusText,
+            status: error.response.status
+        })
+    }
+}
 export const createProfile = (formDate, history, edit = false) => async dispatch => {
     try {
         const config = {
@@ -52,6 +108,8 @@ export const createProfile = (formDate, history, edit = false) => async dispatch
         }
 
     } catch (err) {
+        // Add this
+	    dispatch({ type: CLEAR_PROFILE });
         const errors = err.response.data.errors
 
         if (errors) {
